@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Panel bán Key - Dũng</title>
+<style>
+  :root{
+    --bg:#f5f7fb; --card:#fff; --accent:#6a5acd; --muted:#7b7b9a;
+    --danger:#e74c3c; --success:#2ecc71;
+    --glass: rgba(255,255,255,0.6);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 100%);color:#222}
+  .wrap{max-width:1100px;margin:28px auto;padding:20px}
+  header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#8a6cff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+  h1{font-size:20px;margin:0}
+  .controls{display:flex;gap:8px;align-items:center}
+  .search{padding:10px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;min-width:220px}
+  .btn{padding:10px 12px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(106,90,205,0.12)}
+  .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 6px 20px rgba(30,30,80,0.06)}
+  .table{width:100%;border-collapse:collapse;margin-top:12px}
+  th,td{padding:12px 10px;text-align:left;border-bottom:1px solid #f1f3f8;font-size:14px}
+  th{color:var(--muted);font-weight:600;background:linear-gradient(180deg,rgba(106,90,205,0.03),transparent)}
+  td.actions{display:flex;gap:6px}
+  .pill{display:inline-block;padding:6px 8px;border-radius:12px;font-size:12px}
+  .pill.sold{background:var(--success);color:#fff}
+  .pill.available{background:#f3f4f6;color:#333}
+  .small{font-size:13px;color:var(--muted)}
+  .right{display:flex;gap:8px;align-items:center}
+  footer{margin-top:18px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}
+  /* responsive */
+  @media (max-width:720px){
+    .search{min-width:120px}
+    th:nth-child(3),td:nth-child(3), th:nth-child(4), td:nth-child(4) {display:none}
+  }
+
+  /* modal */
+  .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center}
+  .modal{background:var(--card);padding:18px;border-radius:12px;min-width:320px;max-width:92%}
+  .form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+  input,textarea,select{padding:10px;border-radius:8px;border:1px solid #e8e9f1}
+  .csv-btn{background:#111;color:#fff;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">KD</div>
+      <div>
+        <h1>Panel bán Key</h1>
+        <div class="small">Quản lý & bán key - Local demo</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <input id="search" class="search" placeholder="Tìm theo game, key, người mua..." />
+      <button class="btn ghost" id="btnAdd">Thêm key</button>
+      <button class="btn" id="btnExport">Xuất CSV</button>
+    </div>
+  </header>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div class="small">Danh sách key</div>
+      <div class="small">Tổng: <span id="total">0</span></div>
+    </div>
+
+    <table class="table" id="keysTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Game</th>
+          <th>Key</th>
+          <th>Devices</th>
+          <th>Duration</th>
+          <th>Expired</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+
+    <footer>
+      <div class="small">Ghi chú: đây là demo chạy trên trình duyệt, dữ liệu lưu trong local.</div>
+      <div class="small">Bạn có thể tải CSV để backup.</div>
+    </footer>
+  </div>
+</div>
+
+<!-- Modal Add -->
+<div id="modal" class="modal-back">
+  <div class="modal card">
+    <h3>Thêm / Sửa Key</h3>
+    <div class="form-row">
+      <label>Game</label>
+      <input id="fGame" placeholder="VD: FREEFIRE" />
+    </div>
+    <div class="form-row">
+      <label>Key (mỗi key 1 dòng nếu nhiều)</label>
+      <textarea id="fKey" rows="4" placeholder="NHẬP KEY hoặc dán nhiều key, mỗi key 1 dòng"></textarea>
+    </div>
+    <div class="form-row">
+      <label>Devices (số)</label>
+      <input id="fDevices" placeholder="VD: 1/100" />
+    </div>
+    <div class="form-row">
+      <label>Duration</label>
+      <input id="fDuration" placeholder="VD: 1 Day" />
+    </div>
+    <div class="form-row">
+      <label>Expired (dd-mm-yyyy hh:mm)</label>
+      <input id="fExpired" placeholder="18-11-2025 14:45" />
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn ghost" id="btnCancel">Hủy</button>
+      <button class="btn" id="btnSave">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/*
+  Simple Key Panel (static)
+  - Data stored in localStorage under key "kd_keys"
+  - Actions: add (bulk), copy, mark sold, delete, export CSV
+*/
+
+const sample = [
+  {id: uid(), game:'FREEFIRE', key:'FF-ABCDE-12345', devices:'19/100', duration:'1 Day', expired:'18-11-2025 14:45', status:'available'},
+  {id: uid(), game:'PUBG', key:'PUBG-123-XYZ', devices:'1/1', duration:'30 Days', expired:'01-01-2026 12:00', status:'available'},
+];
+
+function uid(){ return 'k'+Math.random().toString(36).slice(2,9); }
+
+function load(){
+  const s = localStorage.getItem('kd_keys');
+  return s ? JSON.parse(s) : sample.slice();
+}
+function save(data){
+  localStorage.setItem('kd_keys', JSON.stringify(data));
+}
+let keys = load();
+
+const tbody = document.getElementById('tbody');
+const totalEl = document.getElementById('total');
+const searchInput = document.getElementById('search');
+
+function render(filter=''){
+  tbody.innerHTML='';
+  const f = filter.trim().toLowerCase();
+  const list = keys.filter(k=>{
+    if(!f) return true;
+    return (k.game||'').toLowerCase().includes(f) || (k.key||'').toLowerCase().includes(f);
+  });
+  totalEl.textContent = list.length;
+  list.forEach((k,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i+1}</td>
+      <td>${escapeHtml(k.game)}</td>
+      <td><code style="background:#f7f8fb;padding:6px;border-radius:6px;display:inline-block">${escapeHtml(k.key)}</code></td>
+      <td>${escapeHtml(k.devices||'')}</td>
+      <td>${escapeHtml(k.duration||'')}</td>
+      <td>${escapeHtml(k.expired||'')}</td>
+      <td><span class="pill ${k.status==='sold'?'sold':'available'}">${k.status==='sold'?'Đã bán':'Còn'}</span></td>
+      <td class="actions">
+        <button class="btn ghost" data-action="copy" data-id="${k.id}">Copy</button>
+        <button class="btn ghost" data-action="sell" data-id="${k.id}">${k.status==='sold'?'Đặt lại':'Đánh dấu bán'}</button>
+        <button class="btn" data-action="del" data-id="${k.id}">Xóa</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function escapeHtml(s){ return (s||'').toString().replace(/[&<>"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]); }
+
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  if(btn.id==='btnAdd'){ openModal(); return; }
+  if(btn.id==='btnCancel'){ closeModal(); return; }
+  if(btn.id==='btnSave'){ saveModal(); return; }
+  if(btn.id==='btnExport'){ exportCSV(); return; }
+
+  const action = btn.getAttribute('data-action');
+  if(!action) return;
+  const id = btn.getAttribute('data-id');
+  if(action==='copy'){ copyKey(id); return; }
+  if(action==='sell'){ toggleSold(id); return; }
+  if(action==='del'){ delKey(id); return; }
+});
+
+// search
+searchInput.addEventListener('input', ()=>render(searchInput.value));
+
+// modal controls
+const modal = document.getElementById('modal');
+const fGame = document.getElementById('fGame');
+const fKey = document.getElementById('fKey');
+const fDevices = document.getElementById('fDevices');
+const fDuration = document.getElementById('fDuration');
+const fExpired = document.getElementById('fExpired');
+
+function openModal(){
+  modal.style.display='flex';
+  fGame.value=''; fKey.value=''; fDevices.value=''; fDuration.value=''; fExpired.value='';
+}
+function closeModal(){
+  modal.style.display='none';
+}
+function saveModal(){
+  const g = fGame.value.trim();
+  const raw = fKey.value.trim();
+  if(!g || !raw){ alert('Nhập Game và Key ít nhất 1 key.'); return; }
+  const lines = raw.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  const newItems = lines.map(line=>({
+    id: uid(),
+    game:g.toUpperCase(),
+    key:line,
+    devices:fDevices.value.trim()||'',
+    duration:fDuration.value.trim()||'',
+    expired:fExpired.value.trim()||'',
+    status:'available'
+  }));
+  keys = newItems.concat(keys);
+  save(keys);
+  closeModal();
+  render(searchInput.value);
+}
+
+// actions
+function copyKey(id){
+  const it = keys.find(k=>k.id===id);
+  if(!it) return;
+  navigator.clipboard?.writeText(it.key).then(()=>alert('Đã copy key: '+it.key), ()=>alert('Copy thất bại, dùng chạm giữ để copy')));
+}
+function toggleSold(id){
+  keys = keys.map(k=> k.id===id ? {...k, status: k.status==='sold' ? 'available' : 'sold'} : k);
+  save(keys); render(searchInput.value);
+}
+function delKey(id){
+  if(!confirm('Xác nhận xóa key?')) return;
+  keys = keys.filter(k=>k.id!==id);
+  save(keys); render(searchInput.value);
+}
+
+function exportCSV(){
+  if(!keys.length){ alert('Không có dữ liệu để xuất'); return; }
+  const header = ['game','key','devices','duration','expired','status'];
+  const rows = keys.map(k=> header.map(h=> `"${(k[h]||'').toString().replace(/"/g,'""')}"`).join(','));
+  const csv = [header.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'keys_export.csv'; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 5000);
+}
+
+// init
+render();
+</script>
+</body>
+</html>
