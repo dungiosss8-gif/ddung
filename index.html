@@ -1,50 +1,63 @@
-<!doctype html>
+<!--
+Full Key Panel (Firebase) - Single-file HTML
+How to use:
+1) Create a Firebase project at https://console.firebase.google.com
+2) Enable Firestore database (native mode) and Authentication (Email/Password)
+3) Add a Web App in Firebase and copy the firebaseConfig object below (replace the placeholder)
+4) Set Firestore rules for simple admin access (or for testing, set to allow read/write while developing)
+   Example (development only):
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /{document=**} {
+         allow read, write: if true;
+       }
+     }
+   }
+   For production, restrict to authenticated admin only.
+5) Save this file as index.html in your GitHub Pages repo and open the site OR run locally.
+
+Security note: The web app config is public (safe). But protect your Firestore rules in production.
+--><!doctype html>
+
 <html lang="vi">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Panel bán Key - Dũng</title>
+<title>Full Panel bán Key - Firebase</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#f5f7fb; --card:#fff; --accent:#6a5acd; --muted:#7b7b9a;
-    --danger:#e74c3c; --success:#2ecc71;
-    --glass: rgba(255,255,255,0.6);
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 100%);color:#222}
-  .wrap{max-width:1100px;margin:28px auto;padding:20px}
-  header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:18px}
-  .brand{display:flex;align-items:center;gap:12px}
-  .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#8a6cff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
-  h1{font-size:20px;margin:0}
-  .controls{display:flex;gap:8px;align-items:center}
-  .search{padding:10px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;min-width:220px}
-  .btn{padding:10px 12px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer}
-  .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(106,90,205,0.12)}
-  .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 6px 20px rgba(30,30,80,0.06)}
-  .table{width:100%;border-collapse:collapse;margin-top:12px}
-  th,td{padding:12px 10px;text-align:left;border-bottom:1px solid #f1f3f8;font-size:14px}
-  th{color:var(--muted);font-weight:600;background:linear-gradient(180deg,rgba(106,90,205,0.03),transparent)}
-  td.actions{display:flex;gap:6px}
-  .pill{display:inline-block;padding:6px 8px;border-radius:12px;font-size:12px}
-  .pill.sold{background:var(--success);color:#fff}
-  .pill.available{background:#f3f4f6;color:#333}
-  .small{font-size:13px;color:var(--muted)}
-  .right{display:flex;gap:8px;align-items:center}
-  footer{margin-top:18px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}
-  /* responsive */
-  @media (max-width:720px){
-    .search{min-width:120px}
-    th:nth-child(3),td:nth-child(3), th:nth-child(4), td:nth-child(4) {display:none}
-  }
-
-  /* modal */
-  .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center}
-  .modal{background:var(--card);padding:18px;border-radius:12px;min-width:320px;max-width:92%}
-  .form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-  input,textarea,select{padding:10px;border-radius:8px;border:1px solid #e8e9f1}
-  .csv-btn{background:#111;color:#fff;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+:root{--bg:#f6f7fb;--card:#fff;--accent:#6a5acd;--muted:#7b7b9a;--danger:#e74c3c;--success:#2ecc71}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial;background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 100%);color:#222}
+.wrap{max-width:1100px;margin:28px auto;padding:20px}
+header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#8a6cff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+h1{font-size:20px;margin:0}
+.controls{display:flex;gap:8px;align-items:center}
+.search{padding:10px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;min-width:220px}
+.btn{padding:10px 12px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(106,90,205,0.12)}
+.card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 6px 20px rgba(30,30,80,0.06)}
+.table{width:100%;border-collapse:collapse;margin-top:12px}
+th,td{padding:12px 10px;text-align:left;border-bottom:1px solid #f1f3f8;font-size:14px}
+th{color:var(--muted);font-weight:600;background:linear-gradient(180deg,rgba(106,90,205,0.03),transparent)}
+td.actions{display:flex;gap:6px}
+.pill{display:inline-block;padding:6px 8px;border-radius:12px;font-size:12px}
+.pill.sold{background:var(--success);color:#fff}
+.pill.available{background:#f3f4f6;color:#333}
+.small{font-size:13px;color:var(--muted)}
+.right{display:flex;gap:8px;align-items:center}
+footer{margin-top:18px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}
+@media (max-width:720px){.search{min-width:120px}th:nth-child(3),td:nth-child(3), th:nth-child(4), td:nth-child(4) {display:none}}
+.modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center}
+.modal{background:var(--card);padding:18px;border-radius:12px;min-width:320px;max-width:92%}
+.form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+input,textarea,select{padding:10px;border-radius:8px;border:1px solid #e8e9f1}
+.csv-btn{background:#111;color:#fff;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+.auth-box{display:flex;gap:8px;align-items:center}
+.input-sm{padding:8px 10px;border-radius:8px;border:1px solid #e8e9f1}
+.notice{padding:8px;border-radius:8px;background:#fff6f6;color:var(--danger);border:1px solid #f5c6c6}
 </style>
 </head>
 <body>
@@ -53,49 +66,53 @@
     <div class="brand">
       <div class="logo">KD</div>
       <div>
-        <h1>Panel bán Key</h1>
-        <div class="small">Quản lý & bán key - Local demo</div>
+        <h1>Panel bán Key (Firebase)</h1>
+        <div class="small">Quản lý & bán key online</div>
       </div>
-    </div>
+    </div><div class="controls">
+  <input id="search" class="search" placeholder="Tìm theo game, key, người mua..." />
+  <button class="btn ghost" id="btnAdd">Thêm key</button>
+  <button class="btn" id="btnExport">Xuất CSV</button>
+</div>
 
-    <div class="controls">
-      <input id="search" class="search" placeholder="Tìm theo game, key, người mua..." />
-      <button class="btn ghost" id="btnAdd">Thêm key</button>
-      <button class="btn" id="btnExport">Xuất CSV</button>
-    </div>
-  </header>
-
-  <div class="card">
+  </header>  <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div class="small">Danh sách key</div>
       <div class="small">Tổng: <span id="total">0</span></div>
+    </div><table class="table" id="keysTable">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Game</th>
+      <th>Key</th>
+      <th>Devices</th>
+      <th>Duration</th>
+      <th>Expired</th>
+      <th>Trạng thái</th>
+      <th>Hành động</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+
+<footer>
+  <div class="small">Ghi chú: dữ liệu lưu trong Firestore, chỉ admin có thể thao tác.</div>
+  <div class="small">Đăng nhập admin để quản trị.</div>
+</footer>
+
+  </div>  <div style="height:12px"></div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div class="small">Admin</div>
+      <div class="auth-box" id="authBox">
+        <input id="email" class="input-sm" placeholder="Email admin" />
+        <input id="pass" type="password" class="input-sm" placeholder="Mật khẩu" />
+        <button id="btnLogin" class="btn ghost">Đăng nhập</button>
+        <button id="btnLogout" class="btn" style="display:none">Đăng xuất</button>
+      </div>
     </div>
-
-    <table class="table" id="keysTable">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Game</th>
-          <th>Key</th>
-          <th>Devices</th>
-          <th>Duration</th>
-          <th>Expired</th>
-          <th>Trạng thái</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-
-    <footer>
-      <div class="small">Ghi chú: đây là demo chạy trên trình duyệt, dữ liệu lưu trong local.</div>
-      <div class="small">Bạn có thể tải CSV để backup.</div>
-    </footer>
-  </div>
-</div>
-
-<!-- Modal Add -->
-<div id="modal" class="modal-back">
+    <div id="adminNote" style="margin-top:10px"></div>
+  </div></div><!-- Modal Add --><div id="modal" class="modal-back">
   <div class="modal card">
     <h3>Thêm / Sửa Key</h3>
     <div class="form-row">
@@ -123,149 +140,187 @@
       <button class="btn" id="btnSave">Lưu</button>
     </div>
   </div>
-</div>
+</div><!-- Firebase SDK (v9 modular) --><script type="module">
+  // TODO: Replace with your Firebase config
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "SENDER_ID",
+    appId: "APP_ID"
+  };
 
-<script>
-/*
-  Simple Key Panel (static)
-  - Data stored in localStorage under key "kd_keys"
-  - Actions: add (bulk), copy, mark sold, delete, export CSV
-*/
+  // Imports
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+  import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
 
-const sample = [
-  {id: uid(), game:'FREEFIRE', key:'FF-ABCDE-12345', devices:'19/100', duration:'1 Day', expired:'18-11-2025 14:45', status:'available'},
-  {id: uid(), game:'PUBG', key:'PUBG-123-XYZ', devices:'1/1', duration:'30 Days', expired:'01-01-2026 12:00', status:'available'},
-];
+  // Init
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
 
-function uid(){ return 'k'+Math.random().toString(36).slice(2,9); }
+  // references
+  const keysCol = collection(db, 'keys');
 
-function load(){
-  const s = localStorage.getItem('kd_keys');
-  return s ? JSON.parse(s) : sample.slice();
-}
-function save(data){
-  localStorage.setItem('kd_keys', JSON.stringify(data));
-}
-let keys = load();
+  // UI refs
+  const tbody = document.getElementById('tbody');
+  const totalEl = document.getElementById('total');
+  const searchInput = document.getElementById('search');
+  const btnAdd = document.getElementById('btnAdd');
+  const modal = document.getElementById('modal');
+  const fGame = document.getElementById('fGame');
+  const fKey = document.getElementById('fKey');
+  const fDevices = document.getElementById('fDevices');
+  const fDuration = document.getElementById('fDuration');
+  const fExpired = document.getElementById('fExpired');
+  const btnCancel = document.getElementById('btnCancel');
+  const btnSave = document.getElementById('btnSave');
+  const btnExport = document.getElementById('btnExport');
+  const emailInput = document.getElementById('email');
+  const passInput = document.getElementById('pass');
+  const btnLogin = document.getElementById('btnLogin');
+  const btnLogout = document.getElementById('btnLogout');
+  const adminNote = document.getElementById('adminNote');
 
-const tbody = document.getElementById('tbody');
-const totalEl = document.getElementById('total');
-const searchInput = document.getElementById('search');
+  let keys = [];
+  let user = null;
 
-function render(filter=''){
-  tbody.innerHTML='';
-  const f = filter.trim().toLowerCase();
-  const list = keys.filter(k=>{
-    if(!f) return true;
-    return (k.game||'').toLowerCase().includes(f) || (k.key||'').toLowerCase().includes(f);
+  // helpers
+  function uid(){ return 'k'+Math.random().toString(36).slice(2,9); }
+  function escapeHtml(s){ return (s||'').toString().replace(/[&<>\"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  // render
+  function render(list){
+    tbody.innerHTML = '';
+    totalEl.textContent = list.length;
+    list.forEach((k,i)=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${i+1}</td>
+        <td>${escapeHtml(k.game)}</td>
+        <td><code style="background:#f7f8fb;padding:6px;border-radius:6px;display:inline-block">${escapeHtml(k.key)}</code></td>
+        <td>${escapeHtml(k.devices||'')}</td>
+        <td>${escapeHtml(k.duration||'')}</td>
+        <td>${escapeHtml(k.expired||'')}</td>
+        <td><span class="pill ${k.status==='sold'?'sold':'available'}">${k.status==='sold'?'Đã bán':'Còn'}</span></td>
+        <td class="actions">
+          <button class="btn ghost" data-action="copy" data-id="${k.id}">Copy</button>
+          <button class="btn ghost" data-action="sell" data-id="${k.id}">${k.status==='sold'?'Đặt lại':'Đánh dấu bán'}</button>
+          <button class="btn" data-action="del" data-id="${k.id}">Xóa</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // real-time listener
+  const q = query(keysCol, orderBy('createdAt','desc'));
+  onSnapshot(q, snap=>{
+    keys = [];
+    snap.forEach(docSnap=>{
+      const d = docSnap.data();
+      keys.push({id:docSnap.id, ...d});
+    });
+    const filter = searchInput.value.trim().toLowerCase();
+    const list = keys.filter(k=>{
+      if(!filter) return true;
+      return (k.game||'').toLowerCase().includes(filter) || (k.key||'').toLowerCase().includes(filter) || (k.buyer||'').toLowerCase().includes(filter);
+    });
+    render(list);
+  }, err=>console.error(err));
+
+  // actions
+  document.addEventListener('click', e=>{
+    const b = e.target.closest('button');
+    if(!b) return;
+    if(b.id==='btnAdd') return openModal();
+    if(b.id==='btnCancel') return closeModal();
+    if(b.id==='btnSave') return saveModal();
+    if(b.id==='btnExport') return exportCSV();
+    const act = b.getAttribute('data-action');
+    const id = b.getAttribute('data-id');
+    if(!act) return;
+    if(act==='copy') copyKey(id);
+    if(act==='sell') toggleSold(id);
+    if(act==='del') deleteKey(id);
   });
-  totalEl.textContent = list.length;
-  list.forEach((k,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${i+1}</td>
-      <td>${escapeHtml(k.game)}</td>
-      <td><code style="background:#f7f8fb;padding:6px;border-radius:6px;display:inline-block">${escapeHtml(k.key)}</code></td>
-      <td>${escapeHtml(k.devices||'')}</td>
-      <td>${escapeHtml(k.duration||'')}</td>
-      <td>${escapeHtml(k.expired||'')}</td>
-      <td><span class="pill ${k.status==='sold'?'sold':'available'}">${k.status==='sold'?'Đã bán':'Còn'}</span></td>
-      <td class="actions">
-        <button class="btn ghost" data-action="copy" data-id="${k.id}">Copy</button>
-        <button class="btn ghost" data-action="sell" data-id="${k.id}">${k.status==='sold'?'Đặt lại':'Đánh dấu bán'}</button>
-        <button class="btn" data-action="del" data-id="${k.id}">Xóa</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
+
+  searchInput.addEventListener('input', ()=>{
+    const f = searchInput.value.trim().toLowerCase();
+    const list = keys.filter(k=>{
+      if(!f) return true;
+      return (k.game||'').toLowerCase().includes(f) || (k.key||'').toLowerCase().includes(f) || (k.buyer||'').toLowerCase().includes(f);
+    });
+    render(list);
   });
-}
 
-function escapeHtml(s){ return (s||'').toString().replace(/[&<>"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]); }
+  function openModal(){ modal.style.display='flex'; fGame.value=''; fKey.value=''; fDevices.value=''; fDuration.value=''; fExpired.value=''; }
+  function closeModal(){ modal.style.display='none'; }
 
-document.addEventListener('click', e=>{
-  const btn = e.target.closest('button');
-  if(!btn) return;
-  if(btn.id==='btnAdd'){ openModal(); return; }
-  if(btn.id==='btnCancel'){ closeModal(); return; }
-  if(btn.id==='btnSave'){ saveModal(); return; }
-  if(btn.id==='btnExport'){ exportCSV(); return; }
+  async function saveModal(){
+    const g = fGame.value.trim();
+    const raw = fKey.value.trim();
+    if(!g || !raw){ alert('Nhập Game và Key ít nhất 1 key.'); return; }
+    const lines = raw.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    try{
+      for(const line of lines){
+        await addDoc(keysCol, {
+          game: g.toUpperCase(),
+          key: line,
+          devices: fDevices.value.trim()||'',
+          duration: fDuration.value.trim()||'',
+          expired: fExpired.value.trim()||'',
+          status: 'available',
+          buyer: '',
+          createdAt: new Date()
+        });
+      }
+      closeModal();
+    }catch(err){ console.error(err); alert('Lỗi khi thêm key'); }
+  }
 
-  const action = btn.getAttribute('data-action');
-  if(!action) return;
-  const id = btn.getAttribute('data-id');
-  if(action==='copy'){ copyKey(id); return; }
-  if(action==='sell'){ toggleSold(id); return; }
-  if(action==='del'){ delKey(id); return; }
-});
+  async function copyKey(id){
+    const it = keys.find(k=>k.id===id);
+    if(!it) return;
+    try{ await navigator.clipboard.writeText(it.key); alert('Đã copy: '+it.key); }catch(e){ alert('Copy thất bại'); }
+  }
 
-// search
-searchInput.addEventListener('input', ()=>render(searchInput.value));
+  async function toggleSold(id){
+    const it = keys.find(k=>k.id===id);
+    if(!it) return;
+    try{
+      await updateDoc(doc(db,'keys',id), { status: it.status==='sold' ? 'available' : 'sold' });
+    }catch(e){ console.error(e); }
+  }
 
-// modal controls
-const modal = document.getElementById('modal');
-const fGame = document.getElementById('fGame');
-const fKey = document.getElementById('fKey');
-const fDevices = document.getElementById('fDevices');
-const fDuration = document.getElementById('fDuration');
-const fExpired = document.getElementById('fExpired');
+  async function deleteKey(id){ if(!confirm('Xác nhận xóa key?')) return; await deleteDoc(doc(db,'keys',id)); }
 
-function openModal(){
-  modal.style.display='flex';
-  fGame.value=''; fKey.value=''; fDevices.value=''; fDuration.value=''; fExpired.value='';
-}
-function closeModal(){
-  modal.style.display='none';
-}
-function saveModal(){
-  const g = fGame.value.trim();
-  const raw = fKey.value.trim();
-  if(!g || !raw){ alert('Nhập Game và Key ít nhất 1 key.'); return; }
-  const lines = raw.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-  const newItems = lines.map(line=>({
-    id: uid(),
-    game:g.toUpperCase(),
-    key:line,
-    devices:fDevices.value.trim()||'',
-    duration:fDuration.value.trim()||'',
-    expired:fExpired.value.trim()||'',
-    status:'available'
-  }));
-  keys = newItems.concat(keys);
-  save(keys);
-  closeModal();
-  render(searchInput.value);
-}
+  function exportCSV(){
+    if(!keys.length){ alert('Không có dữ liệu để xuất'); return; }
+    const header = ['game','key','devices','duration','expired','status','buyer'];
+    const rows = keys.map(k=> header.map(h=> '"'+((k[h]||'')+'').replace(/"/g,'""')+'"').join(','));
+    const csv = [header.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='keys_export.csv'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },5000);
+  }
 
-// actions
-function copyKey(id){
-  const it = keys.find(k=>k.id===id);
-  if(!it) return;
-  navigator.clipboard?.writeText(it.key).then(()=>alert('Đã copy key: '+it.key), ()=>alert('Copy thất bại, dùng chạm giữ để copy')));
-}
-function toggleSold(id){
-  keys = keys.map(k=> k.id===id ? {...k, status: k.status==='sold' ? 'available' : 'sold'} : k);
-  save(keys); render(searchInput.value);
-}
-function delKey(id){
-  if(!confirm('Xác nhận xóa key?')) return;
-  keys = keys.filter(k=>k.id!==id);
-  save(keys); render(searchInput.value);
-}
+  // Auth
+  btnLogin.addEventListener('click', async ()=>{
+    const email = emailInput.value.trim(); const pass = passInput.value;
+    if(!email||!pass){ alert('Nhập email và mật khẩu'); return; }
+    try{ await signInWithEmailAndPassword(auth,email,pass); }catch(e){ alert('Đăng nhập thất bại: '+e.message); }
+  });
+  btnLogout.addEventListener('click', async ()=>{ await signOut(auth); });
 
-function exportCSV(){
-  if(!keys.length){ alert('Không có dữ liệu để xuất'); return; }
-  const header = ['game','key','devices','duration','expired','status'];
-  const rows = keys.map(k=> header.map(h=> `"${(k[h]||'').toString().replace(/"/g,'""')}"`).join(','));
-  const csv = [header.join(','), ...rows].join('\n');
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'keys_export.csv'; document.body.appendChild(a); a.click();
-  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 5000);
-}
+  onAuthStateChanged(auth, u=>{
+    user = u;
+    if(u){ emailInput.style.display='none'; passInput.style.display='none'; btnLogin.style.display='none'; btnLogout.style.display='inline-block'; adminNote.innerHTML='<div class="small">Đăng nhập: '+u.email+'</div>'; btnAdd.disabled=false; btnExport.disabled=false; }else{ emailInput.style.display='inline-block'; passInput.style.display='inline-block'; btnLogin.style.display='inline-block'; btnLogout.style.display='none'; adminNote.innerHTML='<div class="small">Chưa đăng nhập - chỉ viewer</div>'; btnAdd.disabled=true; btnExport.disabled=true; }
+  });
 
-// init
-render();
-</script>
-</body>
-</html>
+  // Disable add/export until login
+  btnAdd.disabled = true; btnExport.disabled = true;
+
+</script></body>
+  </html>
